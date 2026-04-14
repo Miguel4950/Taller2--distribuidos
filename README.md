@@ -14,18 +14,16 @@ La distribución se ha adaptado específicamente para tus **3 Máquinas Virtuale
 
 ## Manual de Instalación y Funcionamiento (Copiar y Pegar)
 
-A continuación se detalla el paso a paso exacto para descargar, configurar y arrancar todo en las 3 máquinas.
+A continuación se detalla el paso a paso exacto para configurar y arrancar todo en las 3 máquinas, asumiendo que ya descargaste el `.zip` y la carpeta `Taller2--distribuidos-main` se encuentra extraída en el **Escritorio**.
 
-### 1. Preparación del Sistema y Descarga (Aplica a las 3 VMs)
+### 1. Preparación del Sistema (Aplica a las 3 VMs)
 
-Abre la terminal en **cada una de las 3 máquinas virtuales** y pega estos comandos. Instalarán Java, clonarán tu proyecto de GitHub y darán los permisos necesarios en un solo golpe:
+Abre la terminal en **cada una de las 3 máquinas virtuales** y pega estos comandos. Instalarán Java y le darán permisos de ejecución a los scripts de la carpeta que tienes en el Escritorio:
 
 ```bash
 sudo apt update
-sudo apt install -y openjdk-17-jdk git
-git clone https://github.com/Miguel4950/Taller2--distribuidos.git
-cd Taller2--distribuidos
-find . -name "*.sh" -exec chmod +x {} +
+sudo apt install -y openjdk-17-jdk
+find ~/Desktop/Taller2--distribuidos-main -name "*.sh" -exec chmod +x {} +
 ```
 
 ---
@@ -36,10 +34,10 @@ find . -name "*.sh" -exec chmod +x {} +
 
 ### PASO 1: Arrancar el Servidor (HACER SOLO EN LA MÁQUINA 1 - IP: 10.43.98.198)
 
-En la terminal de la Máquina 1 (`10.43.98.198`), navega hasta la carpeta del servidor, compílalo e inícialo pasándole su propia IP para el binding de RMI:
+En la terminal de la Máquina 1 (`10.43.98.198`), pega estos comandos para entrar a la carpeta del servidor desde tu Escritorio, compilar e iniciar pasándole su propia IP:
 
 ```bash
-cd pc1_servidor
+cd ~/Desktop/Taller2--distribuidos-main/pc1_servidor
 ./compilar.sh
 ./ejecutar.sh 10.43.98.198
 ```
@@ -49,16 +47,16 @@ Verás el mensaje de confirmación *"esperando conexiones de los clientes..."*. 
 
 Como tienes 3 VMs, colocarás el primer cliente compartiendo el espacio con el servidor. Abre una **nueva pestaña** o ventana de terminal en esa misma Máquina 1 y ejecuta:
 ```bash
-cd ~/Taller2--distribuidos/pc2_cliente1
+cd ~/Desktop/Taller2--distribuidos-main/pc2_cliente1
 ./compilar.sh
 ./ejecutar.sh 10.43.98.198
 ```
 
 ### PASO 3: Arrancar el Cliente 2 (HACER EN MÁQUINA 2 - IP: 10.43.98.199)
 
-Ve a tu segunda máquina virtual, asegúrate de estar dentro de la carpeta `Taller2--distribuidos` (que descargaste en el paso de Preparación) y ejecuta:
+Ve a tu segunda máquina virtual y ejecuta los comandos referenciando el Escritorio de esa máquina:
 ```bash
-cd pc3_cliente2
+cd ~/Desktop/Taller2--distribuidos-main/pc3_cliente2
 ./compilar.sh
 ./ejecutar.sh 10.43.98.198
 ```
@@ -67,7 +65,7 @@ cd pc3_cliente2
 
 Ve a tu tercera máquina virtual y repite el proceso:
 ```bash
-cd pc4_cliente3
+cd ~/Desktop/Taller2--distribuidos-main/pc4_cliente3
 ./compilar.sh
 ./ejecutar.sh 10.43.98.198
 ```
