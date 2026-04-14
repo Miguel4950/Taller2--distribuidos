@@ -1,90 +1,75 @@
 # Taller de Sistemas Distribuidos: RMI (Cliente-Servidor)
 
-Este repositorio contiene la implementación de un componente/sistema distribuido basado en **Java RMI** (Remote Method Invocation). Permite gestionar la información pre-cargada de estudiantes de un curso a través de un esquema Cliente-Servidor desplegado en distintas Máquinas Virtuales.
+Este repositorio contiene la implementación de un componente/sistema distribuido basado en **Java RMI** (Remote Method Invocation). Permite gestionar la información pre-cargada de estudiantes de un curso a través de un esquema Cliente-Servidor.
 
-## Arquitectura del Proyecto
+## Arquitectura del Proyecto (Despliegue para 3 Máquinas Virtuales)
 
-El sistema está diseñado para correr en una infraestructura de **4 PCs o Máquinas Virtuales (VMs)**. Consta de:
-- **1 Servidor Central:** Carga los datos desde un archivo `.csv` en memoria a través de su arranque y atiende las llamadas por red exponiendo un servicio remoto.
-- **3 Clientes:** Interfaz de consola que se conecta mediante una IP al servidor principal para las consultas. No poseen datos locales.
+La distribución se ha adaptado específicamente para tus **3 Máquinas Virtuales Ubuntu**:
+
+- **Máquina 1 (IP: `10.43.98.198`):** Alojará al Servidor Central y al Cliente 1 (`pc1_servidor` y `pc2_cliente1`).
+- **Máquina 2 (IP: `10.43.98.199`):** Alojará al Cliente 2 (`pc3_cliente2`).
+- **Máquina 3 (IP: `10.43.99.183`):** Alojará al Cliente 3 (`pc4_cliente3`).
 
 ---
 
-## Manual de Instalación y Funcionamiento
+## Manual de Instalación y Funcionamiento (Copiar y Pegar)
 
-A continuación se detalla el paso a paso para configurar este despliegue desde cero, asumiendo una instalación completamente limpia en las 4 Máquinas Virtuales (ej. Ubuntu Server/Desktop).
+A continuación se detalla el paso a paso exacto para descargar, configurar y arrancar todo en las 3 máquinas.
 
-### 1. Preparación del Sistema (Aplica a las 4 PCs)
+### 1. Preparación del Sistema y Descarga (Aplica a las 3 VMs)
 
-Dado que las computadoras (o VMs) vienen completamente de fábrica, el primer paso en **cada una de las 4 máquinas** es instalar Java Development Kit (JDK 17).
-Abre una terminal y ejecuta rigurosamente los siguientes comandos:
+Abre la terminal en **cada una de las 3 máquinas virtuales** y pega estos comandos. Instalarán Java, clonarán tu proyecto de GitHub y darán los permisos necesarios en un solo golpe:
 
 ```bash
-# Refrescar los repositorios de paquetes
 sudo apt update
-
-# Instalar Java 17 y herramientas de compilación
-sudo apt install -y openjdk-17-jdk
-
-# Comprobar que la instalación fue exitosa (Debe imprimir versión 17.x)
-java --version
-javac --version
-```
-
-### 2. Distribución de los Archivos
-
-Debes pasar el código fuente a cada máquina según su rol. Puedes usar clonación de Git o enviar las carpetas por SCP/WinSCP/USB.
-Distribuir de esta manera exacta:
-
-- **En la PC 1 (Servidor):** Descarga/Copia la carpeta entera `pc1_servidor`
-- **En la PC 2 (Cliente 1):** Descarga/Copia la carpeta entera `pc2_cliente1`
-- **En la PC 3 (Cliente 2):** Descarga/Copia la carpeta entera `pc3_cliente2`
-- **En la PC 4 (Cliente 3):** Descarga/Copia la carpeta entera `pc4_cliente3`
-
-### 3. Otorgar Permisos a los Scripts (Aplica a las 4 PCs)
-
-Una vez ubicada la respectiva carpeta en cada máquina virtual, navega mediante la terminal dentro de tu carpeta (`cd pcX...`) y ejecuta este comando para dar permisos de ejecución a los scripts de apoyo:
-
-```bash
-chmod +x compilar.sh ejecutar.sh
+sudo apt install -y openjdk-17-jdk git
+git clone https://github.com/Miguel4950/Taller2--distribuidos.git
+cd Taller2--distribuidos
+find . -name "*.sh" -exec chmod +x {} +
 ```
 
 ---
 
-## Ejecución del Sistema
+## Ejecución del Sistema: Comandos Exactos
 
-> **NOTA IMPORTANTE ANTES DE INICIAR:** Debes encender **PRIMERO** el servidor. Para ello, necesitas conocer la IP local de esa Máquina 1 (IP interna en tu red). Puedes averiguarlo escribiendo `ip a` (Ubuntu) o `ifconfig` en la terminal de esa PC. (Ejemplo asumido: `192.168.1.50`).
+> **IMPORTANTE:** Primero se levanta el servidor en la Máquina 1, y luego los clientes se pueden ir encendiendo en cualquier máquina.
 
-### Paso 1: Levantar el Servidor (PC 1)
+### PASO 1: Arrancar el Servidor (HACER SOLO EN LA MÁQUINA 1 - IP: 10.43.98.198)
 
-Dirígete a la PC 1, abre una terminal en la carpeta `pc1_servidor` y compila el código:
+En la terminal de la Máquina 1 (`10.43.98.198`), navega hasta la carpeta del servidor, compílalo e inícialo pasándole su propia IP para el binding de RMI:
+
 ```bash
+cd pc1_servidor
 ./compilar.sh
+./ejecutar.sh 10.43.98.198
 ```
+Verás el mensaje de confirmación *"esperando conexiones de los clientes..."*. **¡No cierres esta terminal!** Debes dejarla abierta para que el servidor siga corriendo.
 
-Levanta el servidor pasándole LA IP DE ESA MISMA MÁQUINA (esto es indispensable para que RMI asigne correctamente los localizadores a los clientes):
+### PASO 2: Arrancar el Cliente 1 (TAMBIÉN EN MÁQUINA 1)
+
+Como tienes 3 VMs, colocarás el primer cliente compartiendo el espacio con el servidor. Abre una **nueva pestaña** o ventana de terminal en esa misma Máquina 1 y ejecuta:
 ```bash
-./ejecutar.sh 192.168.1.50
-```
-Verás el mensaje de confirmación *"servidor encendido y escuchando en el puerto 1099"*. **Déjalo corriendo.**
-
-### Paso 2: Levantar los Clientes (PC 2, PC 3, PC 4)
-
-Dirígete a cualquier máquina de los clientes, abre una terminal en su carpeta respectiva (ej. `pc2_cliente1`) y compila su código:
-```bash
+cd ~/Taller2--distribuidos/pc2_cliente1
 ./compilar.sh
+./ejecutar.sh 10.43.98.198
 ```
 
-Ahora, conéctate referenciando **la IP del Servidor** (La PC 1):
+### PASO 3: Arrancar el Cliente 2 (HACER EN MÁQUINA 2 - IP: 10.43.98.199)
+
+Ve a tu segunda máquina virtual, asegúrate de estar dentro de la carpeta `Taller2--distribuidos` (que descargaste en el paso de Preparación) y ejecuta:
 ```bash
-./ejecutar.sh 192.168.1.50
+cd pc3_cliente2
+./compilar.sh
+./ejecutar.sh 10.43.98.198
 ```
 
-Se abrirá el Menú Interactivo del Sistema de Consulta y ya puedes realizar solicitudes.
+### PASO 4: Arrancar el Cliente 3 (HACER EN MÁQUINA 3 - IP: 10.43.99.183)
 
----
+Ve a tu tercera máquina virtual y repite el proceso:
+```bash
+cd pc4_cliente3
+./compilar.sh
+./ejecutar.sh 10.43.98.198
+```
 
-## Tolerancia a Fallos
-El sistema incorpora control interno de fallos de red (`RemoteException` y bloques `Try/Catch`), lo que garantiza que:
-1. El consultar por un **ID inválido** no interrumpe el servicio, sino que avisa debidamente que el estudiante no se encontró.
-2. Si un cliente pierde repentinamente conexión al servidor mientras utiliza la app (apagas la PC 1 abruptamente), el software detecta el colapso sin morir con un `NullPointerException`, retornando la interrupción formalmente a la consola. Y permite seguir esperando u operando.
+¡Has completado el despliegue! Todas tus máquinas estarán ahora comunicadas enviando las consultas al servidor en `10.43.98.198:1099`.
